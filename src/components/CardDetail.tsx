@@ -2,21 +2,46 @@ import { ArrowLeft, Share2, Edit, User, Calendar, Tag } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { useParams, useNavigate } from "react-router-dom";
 
-interface CardDetailProps {
-  card: {
-    id: string;
-    frontImage: string;
-    insideImage: string;
-    transcription: string;
-    tags: string[];
-    person: string;
-    event: string;
-    date: string;
-  };
-}
+// Mock data for demonstration
+const mockCards = [
+  {
+    id: "1",
+    frontImage: "/placeholder.svg",
+    insideImage: "/placeholder.svg",
+    transcription: "Happy Birthday! Hope your special day is wonderful and that you have a fantastic year ahead. Love, Mom & Dad",
+    tags: ["birthday", "family", "2024"],
+    person: "Mom & Dad",
+    event: "birthday",
+    date: "2024-03-15"
+  },
+  {
+    id: "2", 
+    frontImage: "/placeholder.svg",
+    insideImage: "/placeholder.svg",
+    transcription: "Congratulations on your graduation! We are so proud of all your hard work and achievements.",
+    tags: ["graduation", "achievement", "2024"],
+    person: "Grandma",
+    event: "graduation", 
+    date: "2024-05-20"
+  }
+];
 
-export const CardDetail = ({ card }: CardDetailProps) => {
+export const CardDetail = () => {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  
+  // Find the card by ID
+  const card = mockCards.find(c => c.id === id);
+  
+  if (!card) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <p className="text-muted-foreground">Card not found</p>
+      </div>
+    );
+  }
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       weekday: 'long',
@@ -31,7 +56,7 @@ export const CardDetail = ({ card }: CardDetailProps) => {
       {/* Header */}
       <div className="sticky top-0 z-40 bg-background/95 backdrop-blur-sm border-b border-border">
         <div className="flex items-center justify-between px-4 py-4">
-          <Button variant="ghost" size="icon">
+          <Button variant="ghost" size="icon" onClick={() => navigate("/")}>
             <ArrowLeft className="w-5 h-5" />
           </Button>
           <div className="flex gap-2">

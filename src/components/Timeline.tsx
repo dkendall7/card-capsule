@@ -3,6 +3,7 @@ import { Plus, Search, Filter, Camera } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { CardPreview } from "./CardPreview";
+import { useNavigate } from "react-router-dom";
 
 // Mock data for demonstration
 const mockCards = [
@@ -33,6 +34,7 @@ const mockCards = [
 export const Timeline = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filter, setFilter] = useState("all");
+  const navigate = useNavigate();
 
   const filteredCards = mockCards.filter(card => {
     const matchesSearch = card.transcription.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -110,6 +112,7 @@ export const Timeline = () => {
       <div className="fixed bottom-6 right-6 z-50">
         <Button
           size="lg"
+          onClick={() => navigate("/capture")}
           className="floating-shadow rounded-full w-14 h-14 bg-primary hover:bg-primary/90"
         >
           <Plus className="w-6 h-6" />

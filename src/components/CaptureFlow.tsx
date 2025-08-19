@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Camera, ArrowLeft, ArrowRight, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useNavigate } from "react-router-dom";
 
 type CaptureStep = "front" | "inside" | "review";
 
@@ -9,6 +10,7 @@ export const CaptureFlow = () => {
   const [currentStep, setCurrentStep] = useState<CaptureStep>("front");
   const [frontImage, setFrontImage] = useState<string | null>(null);
   const [insideImage, setInsideImage] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   const handleImageCapture = (step: CaptureStep) => {
     // In a real app, this would open the camera
@@ -125,7 +127,7 @@ export const CaptureFlow = () => {
               </CardContent>
             </Card>
 
-            <Button size="lg" className="w-full">
+            <Button size="lg" className="w-full" onClick={() => navigate("/")}>
               <Check className="w-5 h-5 mr-2" />
               Save Card
             </Button>
@@ -139,7 +141,7 @@ export const CaptureFlow = () => {
       {/* Header */}
       <div className="sticky top-0 z-40 bg-background/95 backdrop-blur-sm border-b border-border">
         <div className="flex items-center gap-4 px-4 py-4">
-          <Button variant="ghost" size="icon">
+          <Button variant="ghost" size="icon" onClick={() => navigate("/")}>
             <ArrowLeft className="w-5 h-5" />
           </Button>
           <div className="flex-1">

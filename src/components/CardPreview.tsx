@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Calendar, User, Tag } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { useNavigate } from "react-router-dom";
 
 interface CardData {
   id: string;
@@ -21,6 +22,7 @@ interface CardPreviewProps {
 
 export const CardPreview = ({ card }: CardPreviewProps) => {
   const [imageError, setImageError] = useState(false);
+  const navigate = useNavigate();
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -31,7 +33,10 @@ export const CardPreview = ({ card }: CardPreviewProps) => {
   };
 
   return (
-    <Card className="card-shadow hover:card-shadow-hover transition-all duration-200 cursor-pointer group">
+    <Card 
+      className="card-shadow hover:card-shadow-hover transition-all duration-200 cursor-pointer group"
+      onClick={() => navigate(`/card/${card.id}`)}
+    >
       <CardContent className="p-0">
         <div className="flex gap-4 p-4">
           {/* Card Image */}
