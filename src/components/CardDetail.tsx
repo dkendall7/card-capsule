@@ -3,13 +3,16 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useParams, useNavigate } from "react-router-dom";
+import birthdayCardFront from "@/assets/birthday-card-front.jpg";
+import birthdayCardInside from "@/assets/birthday-card-inside.jpg";
+import graduationCardFront from "@/assets/graduation-card-front.jpg";
+import graduationCardInside from "@/assets/graduation-card-inside.jpg";
 
-// Mock data for demonstration
 const mockCards = [
   {
     id: "1",
-    frontImage: "/placeholder.svg",
-    insideImage: "/placeholder.svg",
+    frontImage: birthdayCardFront,
+    insideImage: birthdayCardInside,
     transcription: "Happy Birthday! Hope your special day is wonderful and that you have a fantastic year ahead. Love, Mom & Dad",
     tags: ["birthday", "family", "2024"],
     person: "Mom & Dad",
@@ -18,8 +21,8 @@ const mockCards = [
   },
   {
     id: "2", 
-    frontImage: "/placeholder.svg",
-    insideImage: "/placeholder.svg",
+    frontImage: graduationCardFront,
+    insideImage: graduationCardInside,
     transcription: "Congratulations on your graduation! We are so proud of all your hard work and achievements.",
     tags: ["graduation", "achievement", "2024"],
     person: "Grandma",
