@@ -112,11 +112,11 @@ export const Timeline = () => {
       </div>
 
       {/* Floating Action Button */}
-      <div className="fixed bottom-6 right-6 z-50">
+      <div className="fixed bottom-6 right-6 z-[9999]">
         <Button
           size="lg"
           onClick={() => navigate("/capture")}
-          className="floating-shadow rounded-full w-14 h-14 bg-primary hover:bg-primary/90"
+          className="floating-shadow rounded-full w-14 h-14 bg-primary hover:bg-primary/90 shadow-lg"
         >
           <Plus className="w-6 h-6" />
         </Button>
