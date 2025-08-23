@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
 import { toast } from "@/hooks/use-toast";
+import { useIsMobile } from "@/hooks/use-mobile";
 import birthdayCardFront from "@/assets/birthday-card-front.jpg";
 import birthdayCardInside from "@/assets/birthday-card-inside.jpg";
 
@@ -15,29 +16,41 @@ export const CaptureFlow = () => {
   const [insideImage, setInsideImage] = useState<string | null>(null);
   const frontInputRef = useRef<HTMLInputElement>(null);
   const insideInputRef = useRef<HTMLInputElement>(null);
+  const frontCameraRef = useRef<HTMLInputElement>(null);
+  const insideCameraRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
 
-  const handleImageCapture = (step: CaptureStep) => {
-    // For demo purposes, we'll use mock images
-    const mockImages = {
-      front: birthdayCardFront,
-      inside: birthdayCardInside
-    };
-    
-    if (step === "front") {
-      setFrontImage(mockImages.front);
-      setCurrentStep("inside");
-      toast({
-        title: "Photo captured!",
-        description: "Front of card captured successfully."
-      });
-    } else if (step === "inside") {
-      setInsideImage(mockImages.inside);
-      setCurrentStep("review");
-      toast({
-        title: "Photo captured!",
-        description: "Inside of card captured successfully."
-      });
+  const handleCameraCapture = (step: CaptureStep) => {
+    if (isMobile) {
+      // On mobile, trigger the camera input
+      if (step === "front" && frontCameraRef.current) {
+        frontCameraRef.current.click();
+      } else if (step === "inside" && insideCameraRef.current) {
+        insideCameraRef.current.click();
+      }
+    } else {
+      // On desktop, use mock images for demo
+      const mockImages = {
+        front: birthdayCardFront,
+        inside: birthdayCardInside
+      };
+      
+      if (step === "front") {
+        setFrontImage(mockImages.front);
+        setCurrentStep("inside");
+        toast({
+          title: "Photo captured!",
+          description: "Front of card captured successfully."
+        });
+      } else if (step === "inside") {
+        setInsideImage(mockImages.inside);
+        setCurrentStep("review");
+        toast({
+          title: "Photo captured!",
+          description: "Inside of card captured successfully."
+        });
+      }
     }
   };
 
@@ -81,11 +94,11 @@ export const CaptureFlow = () => {
             <div className="space-y-3">
               <Button 
                 size="lg" 
-                onClick={() => handleImageCapture("front")}
+                onClick={() => handleCameraCapture("front")}
                 className="w-full"
               >
                 <Camera className="w-5 h-5 mr-2" />
-                Take Photo (Demo)
+                {isMobile ? "Take Photo" : "Take Photo (Demo)"}
               </Button>
               <Button 
                 variant="outline"
@@ -101,6 +114,17 @@ export const CaptureFlow = () => {
               ref={frontInputRef}
               type="file"
               accept="image/*"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) handleFileUpload("front", file);
+              }}
+              className="hidden"
+            />
+            <input
+              ref={frontCameraRef}
+              type="file"
+              accept="image/*"
+              capture="environment"
               onChange={(e) => {
                 const file = e.target.files?.[0];
                 if (file) handleFileUpload("front", file);
@@ -125,11 +149,11 @@ export const CaptureFlow = () => {
             <div className="space-y-3">
               <Button 
                 size="lg" 
-                onClick={() => handleImageCapture("inside")}
+                onClick={() => handleCameraCapture("inside")}
                 className="w-full"
               >
                 <Camera className="w-5 h-5 mr-2" />
-                Take Photo (Demo)
+                {isMobile ? "Take Photo" : "Take Photo (Demo)"}
               </Button>
               <Button 
                 variant="outline"
@@ -145,6 +169,17 @@ export const CaptureFlow = () => {
               ref={insideInputRef}
               type="file"
               accept="image/*"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) handleFileUpload("inside", file);
+              }}
+              className="hidden"
+            />
+            <input
+              ref={insideCameraRef}
+              type="file"
+              accept="image/*"
+              capture="environment"
               onChange={(e) => {
                 const file = e.target.files?.[0];
                 if (file) handleFileUpload("inside", file);
