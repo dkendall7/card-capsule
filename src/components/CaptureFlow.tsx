@@ -1,8 +1,11 @@
-import { useState } from "react";
-import { Camera, ArrowLeft, ArrowRight, Check } from "lucide-react";
+import { useState, useRef } from "react";
+import { Camera, ArrowLeft, ArrowRight, Check, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
+import { toast } from "@/hooks/use-toast";
+import birthdayCardFront from "@/assets/birthday-card-front.jpg";
+import birthdayCardInside from "@/assets/birthday-card-inside.jpg";
 
 type CaptureStep = "front" | "inside" | "review";
 
@@ -10,19 +13,54 @@ export const CaptureFlow = () => {
   const [currentStep, setCurrentStep] = useState<CaptureStep>("front");
   const [frontImage, setFrontImage] = useState<string | null>(null);
   const [insideImage, setInsideImage] = useState<string | null>(null);
+  const frontInputRef = useRef<HTMLInputElement>(null);
+  const insideInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
 
   const handleImageCapture = (step: CaptureStep) => {
-    // In a real app, this would open the camera
-    // For demo purposes, we'll use a placeholder
-    const mockImage = "/placeholder.svg";
+    // For demo purposes, we'll use mock images
+    const mockImages = {
+      front: birthdayCardFront,
+      inside: birthdayCardInside
+    };
     
     if (step === "front") {
-      setFrontImage(mockImage);
+      setFrontImage(mockImages.front);
       setCurrentStep("inside");
+      toast({
+        title: "Photo captured!",
+        description: "Front of card captured successfully."
+      });
     } else if (step === "inside") {
-      setInsideImage(mockImage);
+      setInsideImage(mockImages.inside);
       setCurrentStep("review");
+      toast({
+        title: "Photo captured!",
+        description: "Inside of card captured successfully."
+      });
+    }
+  };
+
+  const handleFileUpload = (step: CaptureStep, file: File) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const result = e.target?.result as string;
+      if (step === "front") {
+        setFrontImage(result);
+        setCurrentStep("inside");
+      } else if (step === "inside") {
+        setInsideImage(result);
+        setCurrentStep("review");
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const triggerFileInput = (step: CaptureStep) => {
+    if (step === "front" && frontInputRef.current) {
+      frontInputRef.current.click();
+    } else if (step === "inside" && insideInputRef.current) {
+      insideInputRef.current.click();
     }
   };
 
@@ -40,14 +78,35 @@ export const CaptureFlow = () => {
                 Take a photo of the front of your card
               </p>
             </div>
-            <Button 
-              size="lg" 
-              onClick={() => handleImageCapture("front")}
-              className="w-full"
-            >
-              <Camera className="w-5 h-5 mr-2" />
-              Take Photo
-            </Button>
+            <div className="space-y-3">
+              <Button 
+                size="lg" 
+                onClick={() => handleImageCapture("front")}
+                className="w-full"
+              >
+                <Camera className="w-5 h-5 mr-2" />
+                Take Photo (Demo)
+              </Button>
+              <Button 
+                variant="outline"
+                size="lg" 
+                onClick={() => triggerFileInput("front")}
+                className="w-full"
+              >
+                <Upload className="w-5 h-5 mr-2" />
+                Upload Image
+              </Button>
+            </div>
+            <input
+              ref={frontInputRef}
+              type="file"
+              accept="image/*"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) handleFileUpload("front", file);
+              }}
+              className="hidden"
+            />
           </div>
         );
 
@@ -63,14 +122,35 @@ export const CaptureFlow = () => {
                 Now take a photo of the inside with the message
               </p>
             </div>
-            <Button 
-              size="lg" 
-              onClick={() => handleImageCapture("inside")}
-              className="w-full"
-            >
-              <Camera className="w-5 h-5 mr-2" />
-              Take Photo
-            </Button>
+            <div className="space-y-3">
+              <Button 
+                size="lg" 
+                onClick={() => handleImageCapture("inside")}
+                className="w-full"
+              >
+                <Camera className="w-5 h-5 mr-2" />
+                Take Photo (Demo)
+              </Button>
+              <Button 
+                variant="outline"
+                size="lg" 
+                onClick={() => triggerFileInput("inside")}
+                className="w-full"
+              >
+                <Upload className="w-5 h-5 mr-2" />
+                Upload Image
+              </Button>
+            </div>
+            <input
+              ref={insideInputRef}
+              type="file"
+              accept="image/*"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) handleFileUpload("inside", file);
+              }}
+              className="hidden"
+            />
           </div>
         );
 
@@ -127,7 +207,13 @@ export const CaptureFlow = () => {
               </CardContent>
             </Card>
 
-            <Button size="lg" className="w-full" onClick={() => navigate("/")}>
+            <Button size="lg" className="w-full" onClick={() => {
+              toast({
+                title: "Card saved!",
+                description: "Your card has been saved successfully."
+              });
+              navigate("/");
+            }}>
               <Check className="w-5 h-5 mr-2" />
               Save Card
             </Button>
