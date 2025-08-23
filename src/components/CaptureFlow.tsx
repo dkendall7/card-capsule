@@ -1,25 +1,45 @@
 import { useState, useRef } from "react";
-import { Camera, ArrowLeft, ArrowRight, Check, Upload } from "lucide-react";
+import { Camera, ArrowLeft, Check, Upload, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
 import { useNavigate } from "react-router-dom";
 import { toast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
 import birthdayCardFront from "@/assets/birthday-card-front.jpg";
 import birthdayCardInside from "@/assets/birthday-card-inside.jpg";
 
-type CaptureStep = "front" | "inside" | "review";
+type CaptureStep = "front" | "inside" | "details" | "review";
 
 export const CaptureFlow = () => {
+  const { user } = useAuth();
   const [currentStep, setCurrentStep] = useState<CaptureStep>("front");
   const [frontImage, setFrontImage] = useState<string | null>(null);
   const [insideImage, setInsideImage] = useState<string | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const [cardData, setCardData] = useState({
+    title: "",
+    occasion: "",
+    recipient: "",
+    message: ""
+  });
+  
   const frontInputRef = useRef<HTMLInputElement>(null);
   const insideInputRef = useRef<HTMLInputElement>(null);
   const frontCameraRef = useRef<HTMLInputElement>(null);
   const insideCameraRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
   const isMobile = useIsMobile();
+
+  // Redirect if not authenticated
+  if (!user) {
+    navigate('/');
+    return null;
+  }
 
   const handleCameraCapture = (step: CaptureStep) => {
     if (isMobile) {
@@ -45,7 +65,7 @@ export const CaptureFlow = () => {
         });
       } else if (step === "inside") {
         setInsideImage(mockImages.inside);
-        setCurrentStep("review");
+        setCurrentStep("details");
         toast({
           title: "Photo captured!",
           description: "Inside of card captured successfully."
@@ -61,9 +81,17 @@ export const CaptureFlow = () => {
       if (step === "front") {
         setFrontImage(result);
         setCurrentStep("inside");
+        toast({
+          title: "Photo captured!",
+          description: "Front of card captured successfully."
+        });
       } else if (step === "inside") {
         setInsideImage(result);
-        setCurrentStep("review");
+        setCurrentStep("details");
+        toast({
+          title: "Photo captured!",
+          description: "Inside of card captured successfully."
+        });
       }
     };
     reader.readAsDataURL(file);
@@ -74,6 +102,52 @@ export const CaptureFlow = () => {
       frontInputRef.current.click();
     } else if (step === "inside" && insideInputRef.current) {
       insideInputRef.current.click();
+    }
+  };
+
+  const handleSaveCard = async () => {
+    if (!user || !cardData.title || !cardData.occasion) {
+      toast({
+        title: "Missing Information",
+        description: "Please fill in the required fields.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setIsUploading(true);
+    
+    try {
+      const { data, error } = await supabase
+        .from('cards')
+        .insert({
+          user_id: user.id,
+          title: cardData.title,
+          occasion: cardData.occasion,
+          recipient: cardData.recipient || null,
+          message: cardData.message || null,
+          front_image_url: frontImage,
+          inside_image_url: insideImage,
+          is_public: false
+        });
+
+      if (error) throw error;
+
+      toast({
+        title: "Card Saved!",
+        description: "Your precious memory has been preserved successfully."
+      });
+      
+      navigate("/");
+    } catch (error) {
+      console.error('Error saving card:', error);
+      toast({
+        title: "Error Saving Card",
+        description: "There was an issue saving your card. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsUploading(false);
     }
   };
 
@@ -189,13 +263,77 @@ export const CaptureFlow = () => {
           </div>
         );
 
+      case "details":
+        return (
+          <div className="space-y-6">
+            <div>
+              <h2 className="text-xl font-semibold mb-2">Card Details</h2>
+              <p className="text-muted-foreground">
+                Tell us more about this special card
+              </p>
+            </div>
+            
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="title">Card Title *</Label>
+                <Input
+                  id="title"
+                  placeholder="e.g., Happy Birthday Mom!"
+                  value={cardData.title}
+                  onChange={(e) => setCardData(prev => ({ ...prev, title: e.target.value }))}
+                />
+              </div>
+              
+              <div>
+                <Label htmlFor="occasion">Occasion *</Label>
+                <Input
+                  id="occasion"
+                  placeholder="e.g., Birthday, Wedding, Graduation"
+                  value={cardData.occasion}
+                  onChange={(e) => setCardData(prev => ({ ...prev, occasion: e.target.value }))}
+                />
+              </div>
+              
+              <div>
+                <Label htmlFor="recipient">From/To (optional)</Label>
+                <Input
+                  id="recipient"
+                  placeholder="e.g., From Mom & Dad"
+                  value={cardData.recipient}
+                  onChange={(e) => setCardData(prev => ({ ...prev, recipient: e.target.value }))}
+                />
+              </div>
+              
+              <div>
+                <Label htmlFor="message">Message (optional)</Label>
+                <Textarea
+                  id="message"
+                  placeholder="Type the message from the card here..."
+                  rows={4}
+                  value={cardData.message}
+                  onChange={(e) => setCardData(prev => ({ ...prev, message: e.target.value }))}
+                />
+              </div>
+            </div>
+
+            <Button 
+              size="lg" 
+              className="w-full" 
+              onClick={() => setCurrentStep("review")}
+              disabled={!cardData.title || !cardData.occasion}
+            >
+              Continue to Review
+            </Button>
+          </div>
+        );
+
       case "review":
         return (
           <div className="space-y-6">
             <div>
               <h2 className="text-xl font-semibold mb-2">Review Your Card</h2>
               <p className="text-muted-foreground">
-                Check the photos and transcription
+                Check everything looks good before saving
               </p>
             </div>
             
@@ -219,39 +357,54 @@ export const CaptureFlow = () => {
               </div>
             </div>
 
-            {/* Mock Transcription */}
+            {/* Card Details */}
             <Card>
               <CardHeader>
-                <CardTitle className="text-base">Transcription</CardTitle>
+                <CardTitle className="text-base flex items-center gap-2">
+                  <Heart className="w-5 h-5 text-primary" />
+                  {cardData.title}
+                </CardTitle>
               </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground mb-4">
-                  Happy Birthday! Hope your special day is wonderful and that you have a fantastic year ahead. Love, Mom & Dad
-                </p>
-                
-                <div className="space-y-3">
-                  <div>
-                    <label className="text-sm font-medium">Suggested Tags:</label>
-                    <div className="flex flex-wrap gap-2 mt-1">
-                      <span className="px-2 py-1 bg-accent-soft text-accent-foreground text-xs rounded">birthday</span>
-                      <span className="px-2 py-1 bg-accent-soft text-accent-foreground text-xs rounded">family</span>
-                      <span className="px-2 py-1 bg-accent-soft text-accent-foreground text-xs rounded">2024</span>
-                    </div>
-                  </div>
+              <CardContent className="space-y-3">
+                <div>
+                  <span className="text-sm font-medium">Occasion: </span>
+                  <span className="text-sm text-muted-foreground">{cardData.occasion}</span>
                 </div>
+                {cardData.recipient && (
+                  <div>
+                    <span className="text-sm font-medium">From/To: </span>
+                    <span className="text-sm text-muted-foreground">{cardData.recipient}</span>
+                  </div>
+                )}
+                {cardData.message && (
+                  <div>
+                    <span className="text-sm font-medium">Message: </span>
+                    <p className="text-sm text-muted-foreground mt-1">{cardData.message}</p>
+                  </div>
+                )}
               </CardContent>
             </Card>
 
-            <Button size="lg" className="w-full" onClick={() => {
-              toast({
-                title: "Card saved!",
-                description: "Your card has been saved successfully."
-              });
-              navigate("/");
-            }}>
-              <Check className="w-5 h-5 mr-2" />
-              Save Card
-            </Button>
+            <div className="space-y-3">
+              <Button 
+                size="lg" 
+                className="w-full" 
+                onClick={handleSaveCard}
+                disabled={isUploading}
+              >
+                <Check className="w-5 h-5 mr-2" />
+                {isUploading ? "Saving Card..." : "Save Card"}
+              </Button>
+              <Button 
+                variant="outline" 
+                size="lg" 
+                className="w-full" 
+                onClick={() => setCurrentStep("details")}
+                disabled={isUploading}
+              >
+                Back to Edit
+              </Button>
+            </div>
           </div>
         );
     }
@@ -270,6 +423,7 @@ export const CaptureFlow = () => {
             <div className="flex items-center gap-2 mt-1">
               <div className={`w-2 h-2 rounded-full ${currentStep === "front" ? "bg-primary" : "bg-muted"}`} />
               <div className={`w-2 h-2 rounded-full ${currentStep === "inside" ? "bg-primary" : "bg-muted"}`} />
+              <div className={`w-2 h-2 rounded-full ${currentStep === "details" ? "bg-primary" : "bg-muted"}`} />
               <div className={`w-2 h-2 rounded-full ${currentStep === "review" ? "bg-primary" : "bg-muted"}`} />
             </div>
           </div>

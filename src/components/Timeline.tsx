@@ -1,115 +1,212 @@
-import { useState } from "react";
-import { Plus, Search, Filter, Camera } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Plus, Calendar, Heart, Share2, Camera } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { CardPreview } from "./CardPreview";
 import { useNavigate } from "react-router-dom";
-import birthdayCardFront from "@/assets/birthday-card-front.jpg";
-import birthdayCardInside from "@/assets/birthday-card-inside.jpg";
-import graduationCardFront from "@/assets/graduation-card-front.jpg";
-import graduationCardInside from "@/assets/graduation-card-inside.jpg";
+import { useAuth } from "@/hooks/useAuth";
+import { AuthModal } from "./AuthModal";
+import { OnboardingFlow } from "./OnboardingFlow";
+import { UserNav } from "./UserNav";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
-const mockCards = [
-  {
-    id: "1",
-    frontImage: birthdayCardFront,
-    insideImage: birthdayCardInside,
-    transcription: "Happy Birthday! Hope your special day is wonderful and that you have a fantastic year ahead. Love, Mom & Dad",
-    tags: ["birthday", "family", "2024"],
-    person: "Mom & Dad",
-    event: "birthday",
-    date: "2024-03-15",
-    thumbnail: birthdayCardFront
-  },
-  {
-    id: "2", 
-    frontImage: graduationCardFront,
-    insideImage: graduationCardInside,
-    transcription: "Congratulations on your graduation! We are so proud of all your hard work and achievements.",
-    tags: ["graduation", "achievement", "2024"],
-    person: "Grandma",
-    event: "graduation", 
-    date: "2024-05-20",
-    thumbnail: graduationCardFront
-  }
-];
-
-export const Timeline = () => {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [filter, setFilter] = useState("all");
+export function Timeline() {
   const navigate = useNavigate();
+  const { user, profile, loading } = useAuth();
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [showOnboarding, setShowOnboarding] = useState(false);
 
-  const filteredCards = mockCards.filter(card => {
-    const matchesSearch = card.transcription.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         card.person.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         card.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()));
-    
-    if (filter === "all") return matchesSearch;
-    return matchesSearch && card.event === filter;
+  // Fetch user's cards
+  const { data: cards = [], isLoading: cardsLoading } = useQuery({
+    queryKey: ['cards', user?.id],
+    queryFn: async () => {
+      if (!user) return [];
+      
+      const { data, error } = await supabase
+        .from('cards')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false });
+        
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!user
   });
+
+  // Show onboarding for new users who haven't completed it
+  useEffect(() => {
+    if (user && profile && !profile.onboarding_completed) {
+      setShowOnboarding(true);
+    }
+  }, [user, profile]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
+  // Show auth modal for non-authenticated users
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-gradient-subtle">
+        {/* Header */}
+        <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+          <div className="container mx-auto px-4 h-16 flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <Heart className="w-8 h-8 text-primary" />
+              <h1 className="text-2xl font-bold">CardCapsule</h1>
+            </div>
+            <Button onClick={() => setShowAuthModal(true)}>
+              Get Started
+            </Button>
+          </div>
+        </header>
+
+        {/* Hero Section */}
+        <main className="container mx-auto px-4 py-16 text-center">
+          <div className="max-w-3xl mx-auto space-y-8">
+            <div className="space-y-4">
+              <h2 className="text-4xl lg:text-6xl font-bold">
+                Preserve Your
+                <span className="text-primary block">Precious Memories</span>
+              </h2>
+              <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+                Never lose another greeting card. Capture, organize, and share your special moments with CardCapsule.
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-3 gap-8 mt-16">
+              <div className="space-y-4">
+                <div className="w-16 h-16 mx-auto bg-primary/10 rounded-2xl flex items-center justify-center">
+                  <Camera className="w-8 h-8 text-primary" />
+                </div>
+                <h3 className="text-xl font-semibold">Capture Cards</h3>
+                <p className="text-muted-foreground">
+                  Take photos of your greeting cards with our easy-to-use camera tool
+                </p>
+              </div>
+              <div className="space-y-4">
+                <div className="w-16 h-16 mx-auto bg-primary/10 rounded-2xl flex items-center justify-center">
+                  <Heart className="w-8 h-8 text-primary" />
+                </div>
+                <h3 className="text-xl font-semibold">Preserve Memories</h3>
+                <p className="text-muted-foreground">
+                  Keep your special messages safe and organized in your personal collection
+                </p>
+              </div>
+              <div className="space-y-4">
+                <div className="w-16 h-16 mx-auto bg-primary/10 rounded-2xl flex items-center justify-center">
+                  <Share2 className="w-8 h-8 text-primary" />
+                </div>
+                <h3 className="text-xl font-semibold">Share Joy</h3>
+                <p className="text-muted-foreground">
+                  Share your favorite cards with family and friends to spread happiness
+                </p>
+              </div>
+            </div>
+
+            <Button 
+              size="lg" 
+              onClick={() => setShowAuthModal(true)}
+              className="mt-12"
+            >
+              Start Preserving Memories
+              <Heart className="w-5 h-5 ml-2" />
+            </Button>
+          </div>
+        </main>
+
+        <AuthModal 
+          open={showAuthModal} 
+          onOpenChange={setShowAuthModal}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <div className="sticky top-0 z-40 bg-background/95 backdrop-blur-sm border-b border-border">
-        <div className="px-4 py-6">
-          <h1 className="text-2xl font-bold text-foreground mb-4">CardCapsule</h1>
-          
-          {/* Search and Filter */}
-          <div className="flex gap-3 mb-4">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
-              <Input
-                placeholder="Search cards, people, or events..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 bg-secondary/50 border-border"
-              />
+      <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="container mx-auto px-4 h-16 flex items-center justify-between">
+          <div className="flex items-center space-x-3">
+            <Heart className="w-8 h-8 text-primary" />
+            <h1 className="text-2xl font-bold">CardCapsule</h1>
+          </div>
+          <UserNav />
+        </div>
+      </header>
+
+      {/* Main Content */}
+      <main className="container mx-auto px-4 py-8">
+        {cards.length === 0 && !cardsLoading ? (
+          /* Empty State */
+          <div className="text-center py-16 space-y-6">
+            <div className="mx-auto w-24 h-24 bg-primary/10 rounded-full flex items-center justify-center">
+              <Heart className="w-12 h-12 text-primary" />
             </div>
-            <Button variant="outline" size="icon" className="shrink-0">
-              <Filter className="w-4 h-4" />
+            <div className="space-y-2">
+              <h2 className="text-2xl font-semibold">Your Memory Collection Awaits</h2>
+              <p className="text-muted-foreground max-w-md mx-auto">
+                Start capturing your first greeting card to begin building your personal memory collection.
+              </p>
+            </div>
+            <Button size="lg" onClick={() => navigate("/capture")}>
+              <Plus className="w-5 h-5 mr-2" />
+              Create Your First Card
             </Button>
           </div>
-
-          {/* Filter Tags */}
-          <div className="flex gap-2 overflow-x-auto pb-2">
-            {["all", "birthday", "graduation", "wedding", "sympathy"].map((tag) => (
-              <Button
-                key={tag}
-                variant={filter === tag ? "default" : "outline"}
-                size="sm"
-                onClick={() => setFilter(tag)}
-                className="whitespace-nowrap capitalize"
-              >
-                {tag}
-              </Button>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* Timeline Content */}
-      <div className="px-4 pb-24">
-        {filteredCards.length === 0 ? (
-          <div className="text-center py-12">
-            <Camera className="mx-auto w-12 h-12 text-muted-foreground mb-4" />
-            <h3 className="text-lg font-medium text-foreground mb-2">No cards yet</h3>
-            <p className="text-muted-foreground mb-6">Start preserving your memories by capturing your first card</p>
-          </div>
         ) : (
+          /* Cards Grid */
           <div className="space-y-6">
-            <h2 className="text-lg font-semibold text-foreground">
-              {filteredCards.length} {filteredCards.length === 1 ? 'card' : 'cards'}
-            </h2>
-            
-            <div className="grid gap-4">
-              {filteredCards.map((card) => (
-                <CardPreview key={card.id} card={card} />
-              ))}
+            <div className="flex items-center justify-between">
+              <h2 className="text-3xl font-bold">Your Cards</h2>
+              <Badge variant="secondary" className="text-sm">
+                {cards.length} {cards.length === 1 ? 'card' : 'cards'}
+              </Badge>
             </div>
+
+            {cardsLoading ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {Array.from({ length: 6 }).map((_, i) => (
+                  <Card key={i} className="overflow-hidden">
+                    <div className="aspect-video bg-muted animate-pulse" />
+                    <CardHeader>
+                      <div className="h-4 bg-muted animate-pulse rounded" />
+                      <div className="h-3 bg-muted animate-pulse rounded w-2/3" />
+                    </CardHeader>
+                  </Card>
+                ))}
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {cards.map((card: any) => (
+                  <CardPreview
+                    key={card.id}
+                    card={{
+                      id: card.id,
+                      frontImage: card.front_image_url,
+                      insideImage: card.inside_image_url,
+                      transcription: card.message || card.title,
+                      tags: [card.occasion.toLowerCase()],
+                      person: card.recipient,
+                      event: card.occasion.toLowerCase(),
+                      date: card.date_created,
+                      thumbnail: card.front_image_url
+                    }}
+                  />
+                ))}
+              </div>
+            )}
           </div>
         )}
-      </div>
+      </main>
 
       {/* Floating Action Button */}
       <div className="fixed bottom-6 right-6 z-[9999]">
@@ -121,6 +218,12 @@ export const Timeline = () => {
           <Plus className="w-6 h-6" />
         </Button>
       </div>
+
+      {/* Onboarding Flow */}
+      <OnboardingFlow 
+        open={showOnboarding}
+        onComplete={() => setShowOnboarding(false)}
+      />
     </div>
   );
-};
+}
