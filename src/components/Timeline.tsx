@@ -11,6 +11,7 @@ import { OnboardingFlow } from "./OnboardingFlow";
 import { UserNav } from "./UserNav";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { InstallPrompt } from "./InstallPrompt";
 
 export function Timeline() {
   const navigate = useNavigate();
@@ -62,9 +63,17 @@ export function Timeline() {
               <Heart className="w-8 h-8 text-primary" />
               <h1 className="text-2xl font-bold">CardCapsule</h1>
             </div>
-            <Button onClick={() => setShowAuthModal(true)}>
-              Get Started
-            </Button>
+            <div className="flex items-center gap-3">
+              <Button 
+                variant="outline" 
+                onClick={() => setShowAuthModal(true)}
+              >
+                Log In
+              </Button>
+              <Button onClick={() => navigate("/capture")}>
+                Try It Now
+              </Button>
+            </div>
           </div>
         </header>
 
@@ -111,14 +120,23 @@ export function Timeline() {
               </div>
             </div>
 
-            <Button 
-              size="lg" 
-              onClick={() => setShowAuthModal(true)}
-              className="mt-12"
-            >
-              Start Preserving Memories
-              <Heart className="w-5 h-5 ml-2" />
-            </Button>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center mt-12">
+              <Button 
+                size="lg" 
+                onClick={() => navigate("/capture")}
+              >
+                Try CardCapsule Now
+                <Camera className="w-5 h-5 ml-2" />
+              </Button>
+              <Button 
+                size="lg" 
+                variant="outline"
+                onClick={() => setShowAuthModal(true)}
+              >
+                Sign Up Free
+                <Heart className="w-5 h-5 ml-2" />
+              </Button>
+            </div>
           </div>
         </main>
 
@@ -224,6 +242,9 @@ export function Timeline() {
         open={showOnboarding}
         onComplete={() => setShowOnboarding(false)}
       />
+
+      {/* Install Prompt */}
+      <InstallPrompt />
     </div>
   );
 }

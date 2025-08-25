@@ -12,8 +12,10 @@ import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import birthdayCardFront from "@/assets/birthday-card-front.jpg";
 import birthdayCardInside from "@/assets/birthday-card-inside.jpg";
+import { PostSaveActions } from "./PostSaveActions";
+import { AuthModal } from "./AuthModal";
 
-type CaptureStep = "front" | "inside" | "details" | "review";
+type CaptureStep = "front" | "inside" | "details" | "review" | "success";
 
 export const CaptureFlow = () => {
   const { user } = useAuth();
@@ -21,6 +23,7 @@ export const CaptureFlow = () => {
   const [frontImage, setFrontImage] = useState<string | null>(null);
   const [insideImage, setInsideImage] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
   const [cardData, setCardData] = useState({
     title: "",
     occasion: "",
@@ -32,14 +35,9 @@ export const CaptureFlow = () => {
   const insideInputRef = useRef<HTMLInputElement>(null);
   const frontCameraRef = useRef<HTMLInputElement>(null);
   const insideCameraRef = useRef<HTMLInputElement>(null);
+  // Remove the redirect logic - allow unauthenticated users
   const navigate = useNavigate();
   const isMobile = useIsMobile();
-
-  // Redirect if not authenticated
-  if (!user) {
-    navigate('/');
-    return null;
-  }
 
   const handleCameraCapture = (step: CaptureStep) => {
     if (isMobile) {
@@ -105,8 +103,14 @@ export const CaptureFlow = () => {
     }
   };
 
+  // Show auth modal when trying to save without authentication
   const handleSaveCard = async () => {
-    if (!user || !cardData.title || !cardData.occasion) {
+    if (!user) {
+      setShowAuthModal(true);
+      return;
+    }
+    
+    if (!cardData.title || !cardData.occasion) {
       toast({
         title: "Missing Information",
         description: "Please fill in the required fields.",
@@ -138,7 +142,7 @@ export const CaptureFlow = () => {
         description: "Your precious memory has been preserved successfully."
       });
       
-      navigate("/");
+      setCurrentStep("success");
     } catch (error) {
       console.error('Error saving card:', error);
       toast({
@@ -385,6 +389,15 @@ export const CaptureFlow = () => {
               </CardContent>
             </Card>
 
+            {!user && (
+              <div className="mb-4 p-4 bg-primary/10 rounded-lg border border-primary/20">
+                <p className="text-sm text-center">
+                  👋 <strong>Sign up to save your cards!</strong><br />
+                  You can try capturing without an account, but you'll need to sign up to save and share your memories.
+                </p>
+              </div>
+            )}
+            
             <div className="space-y-3">
               <Button 
                 size="lg" 
@@ -393,7 +406,7 @@ export const CaptureFlow = () => {
                 disabled={isUploading}
               >
                 <Check className="w-5 h-5 mr-2" />
-                {isUploading ? "Saving Card..." : "Save Card"}
+                {!user ? "Sign Up & Save Card" : isUploading ? "Saving Card..." : "Save Card"}
               </Button>
               <Button 
                 variant="outline" 
@@ -405,6 +418,32 @@ export const CaptureFlow = () => {
                 Back to Edit
               </Button>
             </div>
+          </div>
+        );
+
+      case "success":
+        return (
+          <div className="text-center space-y-6">
+            <PostSaveActions
+              lastCardOccasion={cardData.occasion}
+              onAddAnother={() => {
+                // Reset form for new card
+                setFrontImage(null);
+                setInsideImage(null);
+                setCardData({
+                  title: "",
+                  occasion: cardData.occasion, // Pre-fill same occasion
+                  recipient: "",
+                  message: ""
+                });
+                setCurrentStep("front");
+                toast({
+                  title: "Ready for another card!",
+                  description: `Adding another ${cardData.occasion.toLowerCase()} card.`
+                });
+              }}
+              onGoHome={() => navigate("/")}
+            />
           </div>
         );
     }
@@ -425,6 +464,7 @@ export const CaptureFlow = () => {
               <div className={`w-2 h-2 rounded-full ${currentStep === "inside" ? "bg-primary" : "bg-muted"}`} />
               <div className={`w-2 h-2 rounded-full ${currentStep === "details" ? "bg-primary" : "bg-muted"}`} />
               <div className={`w-2 h-2 rounded-full ${currentStep === "review" ? "bg-primary" : "bg-muted"}`} />
+              <div className={`w-2 h-2 rounded-full ${currentStep === "success" ? "bg-green-500" : "bg-muted"}`} />
             </div>
           </div>
         </div>
@@ -434,6 +474,12 @@ export const CaptureFlow = () => {
       <div className="px-4 py-8">
         {renderStepContent()}
       </div>
+
+      {/* Auth Modal */}
+      <AuthModal 
+        open={showAuthModal} 
+        onOpenChange={setShowAuthModal}
+      />
     </div>
   );
 };
