@@ -80,13 +80,20 @@ export function Timeline() {
         {/* Hero Section */}
         <main className="container mx-auto px-4 py-16 text-center">
           <div className="max-w-3xl mx-auto space-y-8">
+            {/* Problem Statement */}
+            <div className="bg-muted/30 rounded-2xl p-6 mb-8">
+              <p className="text-lg text-muted-foreground">
+                We get it. You want to keep those heartfelt cards, but you also want a tidy home. You shouldn't have to choose between preserving precious memories and avoiding clutter.
+              </p>
+            </div>
+            
             <div className="space-y-4">
               <h2 className="text-4xl lg:text-6xl font-bold">
-                Preserve Your
-                <span className="text-primary block">Precious Memories</span>
+                Keep the Love,
+                <span className="text-primary block">Lose the Clutter</span>
               </h2>
               <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-                Never lose another greeting card. Capture, organize, and share your special moments with CardCapsule.
+                Transform your sentimental greeting cards into a digital collection you can treasure forever—without the guilt or the clutter.
               </p>
             </div>
 
@@ -95,27 +102,27 @@ export function Timeline() {
                 <div className="w-16 h-16 mx-auto bg-primary/10 rounded-2xl flex items-center justify-center">
                   <Camera className="w-8 h-8 text-primary" />
                 </div>
-                <h3 className="text-xl font-semibold">Capture Cards</h3>
+                <h3 className="text-xl font-semibold">Capture & Digitize</h3>
                 <p className="text-muted-foreground">
-                  Take photos of your greeting cards with our easy-to-use camera tool
+                  Quickly photograph your cards and transform them into digital keepsakes in seconds
                 </p>
               </div>
               <div className="space-y-4">
                 <div className="w-16 h-16 mx-auto bg-primary/10 rounded-2xl flex items-center justify-center">
                   <Heart className="w-8 h-8 text-primary" />
                 </div>
-                <h3 className="text-xl font-semibold">Preserve Memories</h3>
+                <h3 className="text-xl font-semibold">Guilt-Free Storage</h3>
                 <p className="text-muted-foreground">
-                  Keep your special messages safe and organized in your personal collection
+                  Keep every heartfelt message without the physical clutter—reclaim your space with confidence
                 </p>
               </div>
               <div className="space-y-4">
                 <div className="w-16 h-16 mx-auto bg-primary/10 rounded-2xl flex items-center justify-center">
                   <Share2 className="w-8 h-8 text-primary" />
                 </div>
-                <h3 className="text-xl font-semibold">Share Joy</h3>
+                <h3 className="text-xl font-semibold">Relive & Share</h3>
                 <p className="text-muted-foreground">
-                  Share your favorite cards with family and friends to spread happiness
+                  Access your memories anywhere and share special moments with loved ones instantly
                 </p>
               </div>
             </div>
