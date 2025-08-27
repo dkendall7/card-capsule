@@ -93,8 +93,44 @@ export function Timeline() {
                 <span className="text-primary block">Lose the Clutter</span>
               </h2>
               <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-                Transform your sentimental greeting cards into a digital collection you can treasure forever—without the guilt or the clutter.
+                Turn fleeting moments into timeless keepsakes you can revisit anytime — without the guilt of tossing cards or the burden of clutter.
               </p>
+            </div>
+
+            {/* Visual Demo */}
+            <div className="mt-12 mb-8">
+              <div className="bg-muted/20 rounded-3xl p-8 max-w-2xl mx-auto">
+                <div className="grid md:grid-cols-2 gap-6 items-center">
+                  <div className="space-y-3">
+                    <img 
+                      src="/src/assets/birthday-card-front.jpg" 
+                      alt="Birthday card front"
+                      className="w-full rounded-lg shadow-sm border"
+                    />
+                    <p className="text-sm text-muted-foreground text-center">Physical card</p>
+                  </div>
+                  <div className="space-y-3">
+                    <div className="bg-card rounded-lg p-4 border shadow-sm">
+                      <div className="flex items-center gap-2 mb-3">
+                        <Heart className="w-4 h-4 text-primary" />
+                        <span className="text-sm font-medium">Birthday • March 15, 2024</span>
+                      </div>
+                      <img 
+                        src="/src/assets/birthday-card-front.jpg" 
+                        alt="Digitized birthday card"
+                        className="w-full rounded border mb-3"
+                      />
+                      <p className="text-sm text-muted-foreground">
+                        "Happy Birthday! Wishing you all the best..."
+                      </p>
+                    </div>
+                    <p className="text-sm text-muted-foreground text-center">Digital keepsake</p>
+                  </div>
+                </div>
+                <p className="text-center text-sm font-medium text-primary mt-6">
+                  Two taps to capture, forever safe in your private archive.
+                </p>
+              </div>
             </div>
 
             <div className="grid md:grid-cols-3 gap-8 mt-16">
@@ -113,7 +149,7 @@ export function Timeline() {
                 </div>
                 <h3 className="text-xl font-semibold">Guilt-Free Storage</h3>
                 <p className="text-muted-foreground">
-                  Keep every heartfelt message without the physical clutter—reclaim your space with confidence
+                  Keep every heartfelt message safe, while letting go of the paper.
                 </p>
               </div>
               <div className="space-y-4">
@@ -144,6 +180,11 @@ export function Timeline() {
                 <Heart className="w-5 h-5 ml-2" />
               </Button>
             </div>
+            
+            {/* Trust Signal */}
+            <p className="text-sm text-muted-foreground mt-6">
+              Your memories are private and secure. Only you control what's shared.
+            </p>
           </div>
         </main>
 
