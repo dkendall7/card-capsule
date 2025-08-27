@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { Camera, ArrowLeft, Check, Upload, Heart } from "lucide-react";
+import { Camera, ArrowLeft, Check, Upload, Heart, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -14,6 +14,7 @@ import birthdayCardFront from "@/assets/birthday-card-front.jpg";
 import birthdayCardInside from "@/assets/birthday-card-inside.jpg";
 import { PostSaveActions } from "./PostSaveActions";
 import { AuthModal } from "./AuthModal";
+import { ImageViewerDialog } from "./ImageViewerDialog";
 
 type CaptureStep = "front" | "inside" | "details" | "review" | "success";
 
@@ -24,6 +25,8 @@ export const CaptureFlow = () => {
   const [insideImage, setInsideImage] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const [showImageViewer, setShowImageViewer] = useState(false);
+  const [viewerImage, setViewerImage] = useState<{ url: string; title: string }>({ url: '', title: '' });
   const [cardData, setCardData] = useState({
     title: "",
     occasion: "",
@@ -101,6 +104,11 @@ export const CaptureFlow = () => {
     } else if (step === "inside" && insideInputRef.current) {
       insideInputRef.current.click();
     }
+  };
+
+  const handleImageView = (imageUrl: string, title: string) => {
+    setViewerImage({ url: imageUrl, title });
+    setShowImageViewer(true);
   };
 
   // Show auth modal when trying to save without authentication
@@ -269,13 +277,13 @@ export const CaptureFlow = () => {
 
       case "details":
         return (
-          <div className="space-y-6">
-            <div>
-              <h2 className="text-xl font-semibold mb-2">Card Details</h2>
-              <p className="text-muted-foreground">
-                Tell us more about this special card
-              </p>
-            </div>
+            <div className="space-y-6">
+              <div>
+                <h2 className="text-xl font-semibold mb-2">Card Details</h2>
+                <p className="text-muted-foreground">
+                  Add details about this special card (we're working on auto-extraction!)
+                </p>
+              </div>
             
             <div className="space-y-4">
               <div>
@@ -341,21 +349,37 @@ export const CaptureFlow = () => {
               </p>
             </div>
             
-            {/* Image Preview */}
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <p className="text-sm font-medium mb-2">Front</p>
-                <div className="aspect-[3/4] bg-secondary rounded-lg overflow-hidden">
+            {/* Compact Image Preview */}
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-2">
+                <p className="text-sm font-medium">Front</p>
+                <div 
+                  className="aspect-[3/4] bg-secondary rounded-lg overflow-hidden cursor-pointer relative group"
+                  onClick={() => frontImage && handleImageView(frontImage, 'Card Front')}
+                >
                   {frontImage && (
-                    <img src={frontImage} alt="Front" className="w-full h-full object-cover" />
+                    <>
+                      <img src={frontImage} alt="Front" className="w-full h-full object-cover" />
+                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
+                        <Eye className="w-6 h-6 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                      </div>
+                    </>
                   )}
                 </div>
               </div>
-              <div>
-                <p className="text-sm font-medium mb-2">Inside</p>
-                <div className="aspect-[3/4] bg-secondary rounded-lg overflow-hidden">
+              <div className="space-y-2">
+                <p className="text-sm font-medium">Inside</p>
+                <div 
+                  className="aspect-[3/4] bg-secondary rounded-lg overflow-hidden cursor-pointer relative group"
+                  onClick={() => insideImage && handleImageView(insideImage, 'Card Inside')}
+                >
                   {insideImage && (
-                    <img src={insideImage} alt="Inside" className="w-full h-full object-cover" />
+                    <>
+                      <img src={insideImage} alt="Inside" className="w-full h-full object-cover" />
+                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
+                        <Eye className="w-6 h-6 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                      </div>
+                    </>
                   )}
                 </div>
               </div>
@@ -390,11 +414,15 @@ export const CaptureFlow = () => {
             </Card>
 
             {!user && (
-              <div className="mb-4 p-4 bg-primary/10 rounded-lg border border-primary/20">
-                <p className="text-sm text-center">
-                  👋 <strong>Sign up to save your cards!</strong><br />
-                  You can try capturing without an account, but you'll need to sign up to save and share your memories.
-                </p>
+              <div className="p-4 bg-gradient-to-r from-primary/5 to-primary/10 rounded-xl border border-primary/20">
+                <div className="text-center space-y-2">
+                  <Heart className="w-8 h-8 text-primary mx-auto" />
+                  <h3 className="font-semibold">Ready to save your memory?</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Sign up for free to preserve this card forever.<br />
+                    <span className="font-medium text-primary">Always free, no hidden costs.</span>
+                  </p>
+                </div>
               </div>
             )}
             
@@ -406,7 +434,7 @@ export const CaptureFlow = () => {
                 disabled={isUploading}
               >
                 <Check className="w-5 h-5 mr-2" />
-                {!user ? "Sign Up & Save Card" : isUploading ? "Saving Card..." : "Save Card"}
+                {!user ? "Sign Up Free & Save Card" : isUploading ? "Saving Card..." : "Save Card"}
               </Button>
               <Button 
                 variant="outline" 
@@ -479,6 +507,14 @@ export const CaptureFlow = () => {
       <AuthModal 
         open={showAuthModal} 
         onOpenChange={setShowAuthModal}
+      />
+
+      {/* Image Viewer */}
+      <ImageViewerDialog 
+        open={showImageViewer}
+        onOpenChange={setShowImageViewer}
+        imageUrl={viewerImage.url}
+        title={viewerImage.title}
       />
     </div>
   );

@@ -1,7 +1,8 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/components/ui/use-toast';
+import { useToast } from '@/hooks/use-toast';
+import { EmailConfirmDialog } from '@/components/EmailConfirmDialog';
 
 interface Profile {
   id: string;
@@ -33,6 +34,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
+  const [showEmailConfirm, setShowEmailConfirm] = useState(false);
+  const [signupEmail, setSignupEmail] = useState('');
   const { toast } = useToast();
 
   useEffect(() => {
@@ -107,10 +110,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         variant: "destructive"
       });
     } else {
-      toast({
-        title: "Account Created",
-        description: "Please check your email to verify your account."
-      });
+      // Show prominent email confirmation dialog
+      setSignupEmail(email);
+      setShowEmailConfirm(true);
     }
 
     return { error };
@@ -184,6 +186,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   return (
     <AuthContext.Provider value={value}>
       {children}
+      <EmailConfirmDialog 
+        open={showEmailConfirm}
+        onOpenChange={setShowEmailConfirm}
+        email={signupEmail}
+      />
     </AuthContext.Provider>
   );
 }
