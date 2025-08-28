@@ -78,93 +78,98 @@ export function Timeline() {
         </header>
 
         {/* Hero Section */}
-        <main className="container mx-auto px-4 py-8 text-center">
-          <div className="max-w-3xl mx-auto space-y-6">
-            {/* Problem Statement */}
-            <div className="bg-muted/30 rounded-2xl p-6 mb-6">
-              <p className="text-lg text-muted-foreground">
-                We get it. You want to keep those heartfelt cards, but you also want a tidy home. You shouldn't have to choose between preserving precious memories and avoiding clutter.
+        <main className="container mx-auto px-4 py-12 text-center">
+          {/* Problem Statement - Compact and Eye-catching */}
+          <div className="bg-muted/30 rounded-2xl p-6 max-w-2xl mx-auto mb-8">
+            <p className="text-lg text-muted-foreground">
+              We get it. You want to keep those heartfelt cards, but you also want a tidy home. You shouldn't have to choose between preserving precious memories and avoiding clutter.
+            </p>
+          </div>
+          
+          {/* Hero Headline */}
+          <div className="space-y-6 mb-10">
+            <h2 className="text-4xl lg:text-6xl font-bold leading-tight">
+              Keep the Love,
+              <span className="text-primary block">Lose the Clutter</span>
+            </h2>
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+              Turn fleeting moments into timeless keepsakes you can revisit anytime — without the guilt of tossing cards or the burden of clutter.
+            </p>
+          </div>
+
+          {/* Primary CTAs - Prominently positioned above the fold */}
+          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
+            <Button 
+              size="lg" 
+              onClick={() => navigate("/capture")}
+              className="text-lg px-8 py-4 h-auto"
+            >
+              Try CardCapsule Now
+              <Camera className="w-5 h-5 ml-2" />
+            </Button>
+            <Button 
+              size="lg" 
+              variant="outline"
+              onClick={() => setShowAuthModal(true)}
+              className="text-lg px-8 py-4 h-auto"
+            >
+              Sign Up Free
+              <Heart className="w-5 h-5 ml-2" />
+            </Button>
+          </div>
+
+          {/* Visual Demo - Optimized spacing */}
+          <div className="mb-16">
+            <div className="bg-muted/20 rounded-3xl p-8 max-w-4xl mx-auto">
+              <img 
+                src="/product-comparison-mockup.jpg" 
+                alt="Side-by-side comparison of physical greeting card and digital keepsake in mobile app"
+                className="w-full rounded-xl shadow-lg"
+              />
+              <p className="text-center text-sm font-medium text-primary mt-6">
+                Two taps to capture, forever safe in your private archive.
               </p>
             </div>
-            
-            <div className="space-y-4">
-              <h2 className="text-4xl lg:text-6xl font-bold">
-                Keep the Love,
-                <span className="text-primary block">Lose the Clutter</span>
-              </h2>
-              <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-                Turn fleeting moments into timeless keepsakes you can revisit anytime — without the guilt of tossing cards or the burden of clutter.
-              </p>
-            </div>
+          </div>
 
-            {/* Primary CTAs - Above the fold */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-center mt-8 mb-8">
-              <Button 
-                size="lg" 
-                onClick={() => navigate("/capture")}
-              >
-                Try CardCapsule Now
-                <Camera className="w-5 h-5 ml-2" />
-              </Button>
-              <Button 
-                size="lg" 
-                variant="outline"
-                onClick={() => setShowAuthModal(true)}
-              >
-                Sign Up Free
-                <Heart className="w-5 h-5 ml-2" />
-              </Button>
-            </div>
-
-            {/* Visual Demo */}
-            <div className="mt-8 mb-8">
-              <div className="bg-muted/20 rounded-3xl p-8 max-w-4xl mx-auto">
-                <img 
-                  src="/product-comparison-mockup.jpg" 
-                  alt="Side-by-side comparison of physical greeting card and digital keepsake in mobile app"
-                  className="w-full rounded-xl shadow-lg"
-                />
-                <p className="text-center text-sm font-medium text-primary mt-6">
-                  Two taps to capture, forever safe in your private archive.
-                </p>
-              </div>
-            </div>
-
-            <div className="grid md:grid-cols-3 gap-8 mt-16">
-              <div className="space-y-4">
-                <div className="w-16 h-16 mx-auto bg-primary/10 rounded-2xl flex items-center justify-center">
-                  <Camera className="w-8 h-8 text-primary" />
+          {/* Features Grid - Better visual hierarchy */}
+          <div className="max-w-5xl mx-auto">
+            <div className="grid md:grid-cols-3 gap-8 lg:gap-12">
+              <div className="space-y-6 text-center">
+                <div className="w-20 h-20 mx-auto bg-primary/10 rounded-2xl flex items-center justify-center">
+                  <Camera className="w-10 h-10 text-primary" />
                 </div>
                 <h3 className="text-xl font-semibold">Capture & Digitize</h3>
-                <p className="text-muted-foreground">
+                <p className="text-muted-foreground leading-relaxed">
                   Quickly photograph your cards and transform them into digital keepsakes in seconds
                 </p>
               </div>
-              <div className="space-y-4">
-                <div className="w-16 h-16 mx-auto bg-primary/10 rounded-2xl flex items-center justify-center">
-                  <Heart className="w-8 h-8 text-primary" />
+              <div className="space-y-6 text-center">
+                <div className="w-20 h-20 mx-auto bg-primary/10 rounded-2xl flex items-center justify-center">
+                  <Heart className="w-10 h-10 text-primary" />
                 </div>
                 <h3 className="text-xl font-semibold">Guilt-Free Storage</h3>
-                <p className="text-muted-foreground">
+                <p className="text-muted-foreground leading-relaxed">
                   Keep every heartfelt message safe, while letting go of the paper.
                 </p>
               </div>
-              <div className="space-y-4">
-                <div className="w-16 h-16 mx-auto bg-primary/10 rounded-2xl flex items-center justify-center">
-                  <Share2 className="w-8 h-8 text-primary" />
+              <div className="space-y-6 text-center">
+                <div className="w-20 h-20 mx-auto bg-primary/10 rounded-2xl flex items-center justify-center">
+                  <Share2 className="w-10 h-10 text-primary" />
                 </div>
                 <h3 className="text-xl font-semibold">Relive & Share</h3>
-                <p className="text-muted-foreground">
+                <p className="text-muted-foreground leading-relaxed">
                   Access your memories anywhere and share special moments with loved ones instantly
                 </p>
               </div>
             </div>
 
-            
             {/* Trust Signal */}
-            <p className="text-sm text-muted-foreground mt-6">
-              Your memories are private and secure. Only you control what's shared.
-            </p>
+            <div className="mt-12 pt-8 border-t border-border/50">
+              <p className="text-sm text-muted-foreground">
+                Your memories are private and secure. Only you control what's shared.
+              </p>
+            </div>
           </div>
         </main>
 
