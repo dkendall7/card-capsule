@@ -78,10 +78,10 @@ export function Timeline() {
         </header>
 
         {/* Hero Section */}
-        <main className="container mx-auto px-4 py-16 text-center">
-          <div className="max-w-3xl mx-auto space-y-8">
+        <main className="container mx-auto px-4 py-8 text-center">
+          <div className="max-w-3xl mx-auto space-y-6">
             {/* Problem Statement */}
-            <div className="bg-muted/30 rounded-2xl p-6 mb-8">
+            <div className="bg-muted/30 rounded-2xl p-6 mb-6">
               <p className="text-lg text-muted-foreground">
                 We get it. You want to keep those heartfelt cards, but you also want a tidy home. You shouldn't have to choose between preserving precious memories and avoiding clutter.
               </p>
@@ -97,11 +97,30 @@ export function Timeline() {
               </p>
             </div>
 
+            {/* Primary CTAs - Above the fold */}
+            <div className="flex flex-col sm:flex-row gap-4 justify-center mt-8 mb-8">
+              <Button 
+                size="lg" 
+                onClick={() => navigate("/capture")}
+              >
+                Try CardCapsule Now
+                <Camera className="w-5 h-5 ml-2" />
+              </Button>
+              <Button 
+                size="lg" 
+                variant="outline"
+                onClick={() => setShowAuthModal(true)}
+              >
+                Sign Up Free
+                <Heart className="w-5 h-5 ml-2" />
+              </Button>
+            </div>
+
             {/* Visual Demo */}
-            <div className="mt-12 mb-8">
+            <div className="mt-8 mb-8">
               <div className="bg-muted/20 rounded-3xl p-8 max-w-4xl mx-auto">
                 <img 
-                  src="/src/assets/product-comparison-mockup.jpg" 
+                  src="/product-comparison-mockup.jpg" 
                   alt="Side-by-side comparison of physical greeting card and digital keepsake in mobile app"
                   className="w-full rounded-xl shadow-lg"
                 />
@@ -141,23 +160,6 @@ export function Timeline() {
               </div>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center mt-12">
-              <Button 
-                size="lg" 
-                onClick={() => navigate("/capture")}
-              >
-                Try CardCapsule Now
-                <Camera className="w-5 h-5 ml-2" />
-              </Button>
-              <Button 
-                size="lg" 
-                variant="outline"
-                onClick={() => setShowAuthModal(true)}
-              >
-                Sign Up Free
-                <Heart className="w-5 h-5 ml-2" />
-              </Button>
-            </div>
             
             {/* Trust Signal */}
             <p className="text-sm text-muted-foreground mt-6">
