@@ -43,35 +43,11 @@ export const CaptureFlow = () => {
   const isMobile = useIsMobile();
 
   const handleCameraCapture = (step: CaptureStep) => {
-    if (isMobile) {
-      // On mobile, trigger the camera input
-      if (step === "front" && frontCameraRef.current) {
-        frontCameraRef.current.click();
-      } else if (step === "inside" && insideCameraRef.current) {
-        insideCameraRef.current.click();
-      }
-    } else {
-      // On desktop, use mock images for demo
-      const mockImages = {
-        front: birthdayCardFront,
-        inside: birthdayCardInside
-      };
-      
-      if (step === "front") {
-        setFrontImage(mockImages.front);
-        setCurrentStep("inside");
-        toast({
-          title: "Photo captured!",
-          description: "Front of card captured successfully."
-        });
-      } else if (step === "inside") {
-        setInsideImage(mockImages.inside);
-        setCurrentStep("details");
-        toast({
-          title: "Photo captured!",
-          description: "Inside of card captured successfully."
-        });
-      }
+    // On all devices, trigger the camera input
+    if (step === "front" && frontCameraRef.current) {
+      frontCameraRef.current.click();
+    } else if (step === "inside" && insideCameraRef.current) {
+      insideCameraRef.current.click();
     }
   };
 
@@ -204,7 +180,7 @@ export const CaptureFlow = () => {
                 className="w-full"
               >
                 <Camera className="w-5 h-5 mr-2" />
-                {isMobile ? "Take Photo" : "Take Photo (Demo)"}
+                 Take Photo
               </Button>
               <Button 
                 variant="outline"
@@ -259,7 +235,7 @@ export const CaptureFlow = () => {
                 className="w-full"
               >
                 <Camera className="w-5 h-5 mr-2" />
-                {isMobile ? "Take Photo" : "Take Photo (Demo)"}
+                Take Photo
               </Button>
               <Button 
                 variant="outline"
@@ -374,32 +350,42 @@ export const CaptureFlow = () => {
               <div className="space-y-2">
                 <p className="text-sm font-medium">Front</p>
                 <div 
-                  className="aspect-[3/4] bg-secondary rounded-lg overflow-hidden cursor-pointer relative group"
+                  className="aspect-[3/4] bg-secondary rounded-lg overflow-hidden cursor-pointer relative group border-2 border-dashed border-border"
                   onClick={() => frontImage && handleImageView(frontImage, 'Card Front')}
                 >
-                  {frontImage && (
+                  {frontImage ? (
                     <>
                       <img src={frontImage} alt="Front" className="w-full h-full object-cover" />
                       <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
                         <Eye className="w-6 h-6 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
                       </div>
                     </>
+                  ) : (
+                    <div className="w-full h-full flex flex-col items-center justify-center text-muted-foreground">
+                      <Camera className="w-8 h-8 mb-2" />
+                      <p className="text-xs text-center">No image yet</p>
+                    </div>
                   )}
                 </div>
               </div>
               <div className="space-y-2">
                 <p className="text-sm font-medium">Inside</p>
                 <div 
-                  className="aspect-[3/4] bg-secondary rounded-lg overflow-hidden cursor-pointer relative group"
+                  className="aspect-[3/4] bg-secondary rounded-lg overflow-hidden cursor-pointer relative group border-2 border-dashed border-border"
                   onClick={() => insideImage && handleImageView(insideImage, 'Card Inside')}
                 >
-                  {insideImage && (
+                  {insideImage ? (
                     <>
                       <img src={insideImage} alt="Inside" className="w-full h-full object-cover" />
                       <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
                         <Eye className="w-6 h-6 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
                       </div>
                     </>
+                  ) : (
+                    <div className="w-full h-full flex flex-col items-center justify-center text-muted-foreground">
+                      <Camera className="w-8 h-8 mb-2" />
+                      <p className="text-xs text-center">No image yet</p>
+                    </div>
                   )}
                 </div>
               </div>
