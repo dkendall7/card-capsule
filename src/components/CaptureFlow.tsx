@@ -111,7 +111,6 @@ export const CaptureFlow = () => {
     setShowImageViewer(true);
   };
 
-  // Show auth modal when trying to save without authentication
   const handleBackNavigation = () => {
     switch (currentStep) {
       case "inside":
