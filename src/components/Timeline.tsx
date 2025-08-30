@@ -93,7 +93,7 @@ export function Timeline() {
               <span className="text-primary block">Lose the Clutter</span>
             </h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-              Turn fleeting moments into timeless keepsakes you can revisit anytime — without the guilt of tossing cards or the burden of clutter.
+              Turn fleeting moments into timeless keepsakes you can revisit anytime — without the guilt of tossing cards or taking up extra space.
             </p>
           </div>
 
