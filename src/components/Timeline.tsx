@@ -82,7 +82,7 @@ export function Timeline() {
           {/* Problem Statement - Compact and Eye-catching */}
           <div className="bg-muted/30 rounded-2xl p-6 max-w-2xl mx-auto mb-8">
             <p className="text-lg text-muted-foreground">
-              We get it. You want to keep those heartfelt cards, but you also want a tidy home. You shouldn't have to choose between preserving precious memories and avoiding clutter.
+              We get it. You want to keep those heartfelt cards, but piling them up in a shoebox can feel like a bit much. You shouldn't have to choose between preserving memories and avoiding clutter.
             </p>
           </div>
           
