@@ -112,6 +112,27 @@ export const CaptureFlow = () => {
   };
 
   // Show auth modal when trying to save without authentication
+  const handleBackNavigation = () => {
+    switch (currentStep) {
+      case "inside":
+        setCurrentStep("front");
+        break;
+      case "details":
+        setCurrentStep("inside");
+        break;
+      case "review":
+        setCurrentStep("details");
+        break;
+      case "success":
+        setCurrentStep("review");
+        break;
+      case "front":
+      default:
+        navigate("/");
+        break;
+    }
+  };
+
   const handleSaveCard = async () => {
     if (!user) {
       setShowAuthModal(true);
@@ -482,7 +503,7 @@ export const CaptureFlow = () => {
       {/* Header */}
       <div className="sticky top-0 z-40 bg-background/95 backdrop-blur-sm border-b border-border">
         <div className="flex items-center gap-4 px-4 py-4">
-          <Button variant="ghost" size="icon" onClick={() => navigate("/")}>
+          <Button variant="ghost" size="icon" onClick={handleBackNavigation}>
             <ArrowLeft className="w-5 h-5" />
           </Button>
           <div className="flex-1">
