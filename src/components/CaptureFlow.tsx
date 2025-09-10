@@ -57,7 +57,7 @@ export const CaptureFlow = () => {
       const result = e.target?.result as string;
       if (step === "front") {
         setFrontImage(result);
-        setCurrentStep("inside");
+        // Don't auto-advance - stay on front step to show options
         toast({
           title: "Photo captured!",
           description: "Front of card captured successfully."
@@ -164,34 +164,83 @@ export const CaptureFlow = () => {
       case "front":
         return (
           <div className="text-center space-y-6">
-            <div className="mx-auto w-32 h-40 bg-secondary rounded-lg border-2 border-dashed border-border flex items-center justify-center">
-              <Camera className="w-8 h-8 text-muted-foreground" />
-            </div>
-            <div>
-              <h2 className="text-xl font-semibold mb-2">Capture the Front</h2>
-              <p className="text-muted-foreground">
-                Take a photo of the front of your card
-              </p>
-            </div>
-            <div className="space-y-3">
-              <Button 
-                size="lg" 
-                onClick={() => handleCameraCapture("front")}
-                className="w-full"
-              >
-                <Camera className="w-5 h-5 mr-2" />
-                 Take Photo
-              </Button>
-              <Button 
-                variant="outline"
-                size="lg" 
-                onClick={() => triggerFileInput("front")}
-                className="w-full"
-              >
-                <Upload className="w-5 h-5 mr-2" />
-                Upload Image
-              </Button>
-            </div>
+            {!frontImage ? (
+              <>
+                <div className="mx-auto w-32 h-40 bg-secondary rounded-lg border-2 border-dashed border-border flex items-center justify-center">
+                  <Camera className="w-8 h-8 text-muted-foreground" />
+                </div>
+                <div>
+                  <h2 className="text-xl font-semibold mb-2">Capture the Front</h2>
+                  <p className="text-muted-foreground">
+                    Take a photo of the front of your card
+                  </p>
+                </div>
+                <div className="space-y-3">
+                  <Button 
+                    size="lg" 
+                    onClick={() => handleCameraCapture("front")}
+                    className="w-full"
+                  >
+                    <Camera className="w-5 h-5 mr-2" />
+                     Take Photo
+                  </Button>
+                  <Button 
+                    variant="outline"
+                    size="lg" 
+                    onClick={() => triggerFileInput("front")}
+                    className="w-full"
+                  >
+                    <Upload className="w-5 h-5 mr-2" />
+                    Upload Image
+                  </Button>
+                </div>
+              </>
+            ) : (
+              <>
+                <div 
+                  className="mx-auto w-48 h-60 bg-secondary rounded-lg overflow-hidden cursor-pointer relative group"
+                  onClick={() => handleImageView(frontImage, 'Card Front')}
+                >
+                  <img src={frontImage} alt="Front" className="w-full h-full object-cover" />
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
+                    <Eye className="w-6 h-6 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                  </div>
+                </div>
+                <div>
+                  <h2 className="text-xl font-semibold mb-2">Front Captured!</h2>
+                  <p className="text-muted-foreground">
+                    What would you like to do next?
+                  </p>
+                </div>
+                <div className="space-y-3">
+                  <Button 
+                    size="lg" 
+                    onClick={() => setCurrentStep("inside")}
+                    className="w-full"
+                  >
+                    <Camera className="w-5 h-5 mr-2" />
+                    Capture Inside
+                  </Button>
+                  <Button 
+                    variant="outline"
+                    size="lg" 
+                    onClick={() => setCurrentStep("details")}
+                    className="w-full"
+                  >
+                    <Check className="w-5 h-5 mr-2" />
+                    Skip Inside & Continue
+                  </Button>
+                  <Button 
+                    variant="ghost"
+                    size="sm" 
+                    onClick={() => setFrontImage(null)}
+                    className="w-full"
+                  >
+                    Retake Front Photo
+                  </Button>
+                </div>
+              </>
+            )}
             <input
               ref={frontInputRef}
               type="file"
@@ -225,7 +274,7 @@ export const CaptureFlow = () => {
             <div>
               <h2 className="text-xl font-semibold mb-2">Capture the Inside</h2>
               <p className="text-muted-foreground">
-                Now take a photo of the inside with the message
+                {insideImage ? "Inside captured! Take another or continue." : "Take a photo of the inside message, or skip if there isn't one"}
               </p>
             </div>
             <div className="space-y-3">
@@ -235,7 +284,7 @@ export const CaptureFlow = () => {
                 className="w-full"
               >
                 <Camera className="w-5 h-5 mr-2" />
-                Take Photo
+                {insideImage ? "Retake Inside Photo" : "Take Photo"}
               </Button>
               <Button 
                 variant="outline"
@@ -245,6 +294,15 @@ export const CaptureFlow = () => {
               >
                 <Upload className="w-5 h-5 mr-2" />
                 Upload Image
+              </Button>
+              <Button 
+                variant="outline"
+                size="lg" 
+                onClick={() => setCurrentStep("details")}
+                className="w-full"
+              >
+                <Check className="w-5 h-5 mr-2" />
+                Skip Inside & Continue
               </Button>
             </div>
             <input
