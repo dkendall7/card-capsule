@@ -1,3 +1,4 @@
+import { router } from 'expo-router';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { colors, spacing, typography } from '@/src/lib/theme';
@@ -8,9 +9,7 @@ export default function HomeScreen() {
       {/* Prominent Add Card CTA */}
       <Pressable
         style={({ pressed }: { pressed: boolean }) => [styles.addCardCta, pressed && styles.addCardCtaPressed]}
-        onPress={() => {
-          // Placeholder — non-functional for Phase 0
-        }}
+        onPress={() => router.push('/capture')}
       >
         <Text style={styles.addCardCtaIcon}>+</Text>
         <Text style={styles.addCardCtaText}>Add Card</Text>
