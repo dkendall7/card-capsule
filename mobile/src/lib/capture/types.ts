@@ -8,3 +8,9 @@ export interface ScanResult {
   scannedImages: string[];
   status: ScanStatus;
 }
+
+/** Response from react-native-document-scanner-plugin scanDocument */
+export interface ScanDocumentResponse {
+  scannedImages?: string[];
+  status?: ScanStatus;
+}

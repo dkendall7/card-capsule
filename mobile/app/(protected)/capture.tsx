@@ -4,7 +4,7 @@ import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useDocumentScanner } from '@/src/lib/capture/useDocumentScanner';
 import { colors, spacing, typography } from '@/src/lib/theme';
 
-export default function CaptureScreen() {
+function CaptureScreen() {
   const { startScan, isScanning, result, error, isExpoGo } = useDocumentScanner();
 
   return (
@@ -136,3 +136,5 @@ const styles = StyleSheet.create({
     color: colors.primary,
   },
 });
+
+export default CaptureScreen;

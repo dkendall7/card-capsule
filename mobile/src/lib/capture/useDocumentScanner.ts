@@ -34,7 +34,11 @@ export function useDocumentScanner() {
       const status = response.status ?? 'cancel';
       setResult({ scannedImages, status });
     } catch (e) {
-      const message = e instanceof Error ? e.message : 'Scanner failed';
+      const raw = e instanceof Error ? e.message : String(e);
+      const message =
+        raw.includes('-11800') || raw.includes('Unable to capture media')
+          ? 'Camera unavailable. Try on a physical device — the simulator has no camera.'
+          : raw;
       setError(message);
     } finally {
       setIsScanning(false);

@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "mobile",
-    "slug": "mobile",
+    "name": "Everkeep",
+    "slug": "everkeep",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -14,9 +14,14 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.loophole.everkeep",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
+      "package": "com.loophole.everkeep",
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
@@ -31,10 +36,22 @@
     },
     "plugins": [
       "expo-router",
-      ["react-native-document-scanner-plugin",{"cameraPermission":"CardCapsule needs camera access to scan cards"}]
+      [
+        "react-native-document-scanner-plugin",
+        {
+          "cameraPermission": "CardCapsule needs camera access to scan cards"
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "dac5bb65-22a6-4edb-b1af-96b2de304569"
+      }
+    },
+    "owner": "dkendall7"
   }
 }
